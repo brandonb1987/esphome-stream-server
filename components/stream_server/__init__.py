@@ -1,8 +1,9 @@
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import uart
-from esphome.const import CONF_ID, CONF_PORT, CONF_BUFFER_SIZE, __version__
-from esphome.util import parse_esphome_version
+from esphome.const import CONF_ID, CONF_PORT, CONF_BUFFER_SIZE
+from esphome.core import Version
 
 # ESPHome doesn't know the Stream abstraction yet, so hardcode to use a UART for now.
 
@@ -46,7 +47,7 @@ async def to_code(config):
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
 
-    # Safely parse the core version string directly to bypass the deprecated global wrapper
-    esphome_version = parse_esphome_version(__version__)
-    if (2025, 12, 0) <= esphome_version < (2026, 3, 0):
+    esphome_version = Version.parse(cv.ESPHOME_VERSION)
+
+    if Version(2025, 12, 0) <= esphome_version < Version(2026, 3, 0):
         uart.request_wake_loop_on_rx()
